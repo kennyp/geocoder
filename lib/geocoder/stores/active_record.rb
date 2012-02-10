@@ -16,13 +16,13 @@ module Geocoder::Store
 
         # scope: geocoded objects
         scope :geocoded, lambda {
-          {:conditions => "#{geocoder_options[:latitude]} IS NOT NULL " +
-            "AND #{geocoder_options[:longitude]} IS NOT NULL"}}
+          {:conditions => "#{table_name}.#{geocoder_options[:latitude]} IS NOT NULL " +
+            "AND #{table_name}.#{geocoder_options[:longitude]} IS NOT NULL"}}
 
         # scope: not-geocoded objects
         scope :not_geocoded, lambda {
-          {:conditions => "#{geocoder_options[:latitude]} IS NULL " +
-            "OR #{geocoder_options[:longitude]} IS NULL"}}
+          {:conditions => "#{table_name}.#{geocoder_options[:latitude]} IS NULL " +
+            "OR #{table_name}.#{geocoder_options[:longitude]} IS NULL"}}
 
         ##
         # Find all objects within a radius of the given location.
@@ -50,11 +50,11 @@ module Geocoder::Store
         scope :within_bounding_box, lambda{ |bounds|
           sw_lat, sw_lng, ne_lat, ne_lng = bounds.flatten if bounds
           return where(:id => false) unless sw_lat && sw_lng && ne_lat && ne_lng
-          spans = "#{geocoder_options[:latitude]} BETWEEN #{sw_lat} AND #{ne_lat} AND "
+          spans = "#{table_name}.#{geocoder_options[:latitude]} BETWEEN #{sw_lat} AND #{ne_lat} AND "
           spans << if sw_lng > ne_lng   # Handle a box that spans 180
-            "#{geocoder_options[:longitude]} BETWEEN #{sw_lng} AND 180 OR #{geocoder_options[:longitude]} BETWEEN -180 AND #{ne_lng}"
+            "#{table_name}.#{geocoder_options[:longitude]} BETWEEN #{sw_lng} AND 180 OR #{table_name}.#{geocoder_options[:longitude]} BETWEEN -180 AND #{ne_lng}"
           else
-            "#{geocoder_options[:longitude]} BETWEEN #{sw_lng} AND #{ne_lng}"
+            "#{table_name}.#{geocoder_options[:longitude]} BETWEEN #{sw_lng} AND #{ne_lng}"
           end
           { :conditions => spans }
         }
@@ -114,8 +114,8 @@ module Geocoder::Store
       # http://www.beginningspatial.com/calculating_bearing_one_point_another
       #
       def full_near_scope_options(latitude, longitude, radius, options)
-        lat_attr = geocoder_options[:latitude]
-        lon_attr = geocoder_options[:longitude]
+        lat_attr = table_name + '.' + geocoder_options[:latitude]
+        lon_attr = table_name + '.' + geocoder_options[:longitude]
         options[:bearing] = :linear unless options.include?(:bearing)
         bearing = case options[:bearing]
         when :linear
@@ -154,8 +154,8 @@ module Geocoder::Store
       # http://www.scribd.com/doc/2569355/Geo-Distance-Search-with-MySQL
 
       def full_distance_from_sql(latitude, longitude, options)
-        lat_attr = geocoder_options[:latitude]
-        lon_attr = geocoder_options[:longitude]
+        lat_attr = table_name + '.' + geocoder_options[:latitude]
+        lon_attr = table_name + '.' + geocoder_options[:longitude]
 
         earth = Geocoder::Calculations.earth_radius(options[:units] || :mi)
 
@@ -166,8 +166,8 @@ module Geocoder::Store
       end
 
       def approx_distance_from_sql(latitude, longitude, options)
-        lat_attr = geocoder_options[:latitude]
-        lon_attr = geocoder_options[:longitude]
+        lat_attr = table_name + '.' + geocoder_options[:latitude]
+        lon_attr = table_name + '.' + geocoder_options[:longitude]
 
         dx = Geocoder::Calculations.longitude_degree_distance(30, options[:units] || :mi)
         dy = Geocoder::Calculations.latitude_degree_distance(options[:units] || :mi)
@@ -189,8 +189,8 @@ module Geocoder::Store
       # only exist for interface consistency--not intended for production!
       #
       def approx_near_scope_options(latitude, longitude, radius, options)
-        lat_attr = geocoder_options[:latitude]
-        lon_attr = geocoder_options[:longitude]
+        lat_attr = table_name + '.' + geocoder_options[:latitude]
+        lon_attr = table_name + '.' + geocoder_options[:longitude]
         options[:bearing] = :linear unless options.include?(:bearing)
         if options[:bearing]
           bearing = "CASE " +
