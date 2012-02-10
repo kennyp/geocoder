@@ -175,8 +175,8 @@ module Geocoder::Store
         # sin of 45 degrees = average x or y component of vector
         factor = Math.sin(Math::PI / 4)
 
-        "(#{dy} * ABS(#{table_name}.#{lat_attr} - #{latitude}) * #{factor}) + " +
-          "(#{dx} * ABS(#{table_name}.#{lon_attr} - #{longitude}) * #{factor})"
+        "(#{dy} * ABS(#{lat_attr} - #{latitude}) * #{factor}) + " +
+          "(#{dx} * ABS(#{lon_attr} - #{longitude}) * #{factor})"
       end
 
       ##
