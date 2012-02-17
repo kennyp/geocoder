@@ -161,7 +161,7 @@ module Geocoder::Store
 
         "#{earth} * 2 * ASIN(SQRT(" +
           "POWER(SIN((#{latitude} - #{lat_attr}) * PI() / 180 / 2), 2) + " +
-          "COS(#{latitude} * PI() / 180) * COS(#{table_name}.#{lat_attr} * PI() / 180) * " +
+          "COS(#{latitude} * PI() / 180) * COS(#{lat_attr} * PI() / 180) * " +
           "POWER(SIN((#{longitude} - #{lon_attr}) * PI() / 180 / 2), 2) ))"
       end
 
