@@ -160,9 +160,9 @@ module Geocoder::Store
         earth = Geocoder::Calculations.earth_radius(options[:units] || :mi)
 
         "#{earth} * 2 * ASIN(SQRT(" +
-          "POWER(SIN((#{latitude} - #{table_name}.#{lat_attr}) * PI() / 180 / 2), 2) + " +
+          "POWER(SIN((#{latitude} - #{lat_attr}) * PI() / 180 / 2), 2) + " +
           "COS(#{latitude} * PI() / 180) * COS(#{table_name}.#{lat_attr} * PI() / 180) * " +
-          "POWER(SIN((#{longitude} - #{table_name}.#{lon_attr}) * PI() / 180 / 2), 2) ))"
+          "POWER(SIN((#{longitude} - #{lon_attr}) * PI() / 180 / 2), 2) ))"
       end
 
       def approx_distance_from_sql(latitude, longitude, options)
