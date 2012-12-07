@@ -12,8 +12,8 @@ module Geocoder::Lookup
 
     def results(query, reverse = false)
       return [] unless doc = fetch_data(query, reverse)
-      if doc = doc['ResultSet'] and doc['Error'] == 0
-        return doc['Found'] > 0 ? doc['Results'] : []
+      if doc = doc['ResultSet'] and doc['Error'].to_i == 0
+        return doc['Found'].to_i > 0 ? Array(doc['Results']) : []
       else
         warn "Yahoo Geocoding API error: #{doc['Error']} (#{doc['ErrorMessage']})."
         return []
